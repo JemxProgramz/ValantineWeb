@@ -1,70 +1,144 @@
-@import url('https://fonts.googleapis.com/css2?family=Zeyada&display=swap');
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
 
 body {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background-size: 1000px;
-  background-image: url("https://www.psdgraphics.com/wp-content/uploads/2022/01/white-math-paper-texture.jpg");
-  background-position: center center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, #ffffff 0%, #ffe4e8 100%);
+    font-family: "Quicksand", sans-serif;
+    overflow: hidden; /* Important to hide petals as they fall out of view */
 }
 
-.paper {
-  background-image: url("https://i0.wp.com/textures.world/wp-content/uploads/2018/10/2-Millimeter-Paper-Background-copy.jpg?ssl=1");
-  background-size: 500px;
-  background-position: center center;
-  padding: 20px 100px;
-/* min-width: 800px; */
-  
-  transform: rotateZ(-5deg);
-  box-shadow: 1px 15px 20px 0px rgba(0,0,0,0.5);
-  
-  position: absolute;
+/* Petal Rain Styling */
+.petal {
+    position: absolute;
+    background-color: #ff4d6d;
+    border-radius: 150% 0 150% 0;
+    z-index: 1;
+    pointer-events: none;
+    animation: fall linear forwards;
 }
 
-.paper.heart {
-  position: relative;
-  width: 200px;
-  height: 200px;
-  padding: 0;
-  border-radius: 50%;
+@keyframes fall {
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.8; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0.2; }
 }
 
-.paper.image {
-  padding: 10px;
-}
-.paper.image p {
-  font-size: 30px;
-}
-
-img {
-  max-height: 200px;
-  width: 100%;
-  user-select: none;
+.container {
+    position: relative;
+    z-index: 10;
+    text-align: center;
 }
 
-.paper.heart::after {
-  content: "";
-  background-image: url('https://cdn.pixabay.com/photo/2016/03/31/19/25/cartoon-1294994__340.png');
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-size: 150px;
-  background-position: center center;
-  background-repeat: no-repeat;
-  opacity: 0.6;
+.local-gif, .gif-result {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
+    margin-bottom: 2rem;
 }
 
-p {
-  font-family: 'Zeyada';
-  font-size: 50px;
-  color: rgb(0,0,100);
-  opacity: 0.75;
-  user-select: none;
-  
-  /* filter: drop-shadow(2px 1.5px 1px rgba(0,0,105,0.9)); */
+.question {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    color: #ff4d6d;
+    margin-bottom: 2rem;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    position: relative;
+    min-height: 60px;
+}
+
+.btn {
+    border: none;
+    border-radius: 50px;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background-color: #ff54a4;
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 84, 164, 0.4);
+}
+
+.js-no-btn {
+    position: absolute; /* Needed for the runaway logic */
+    left: 55%;
+}
+
+.js-yes-btn {
+    margin-right: 120px; /* Space for the absolute No button */
+}
+.claim{
+    border: none;
+    border-radius: 50px;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background-color: #ff54a4;
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 84, 164, 0.4);
+
+}
+.btn:hover {
+    transform: scale(1.1);
+    background-color: #ff4093;
+}
+
+/* Transitions */
+.result-container {
+    display: none;
+}
+
+/* --- Heart Loader --- */
+.cssload-main {
+    display: none;
+    position: relative;
+    z-index: 100;
+}
+
+.cssload-heart {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    animation: cssload-heart 2.88s infinite;
+}
+
+.cssload-heartL, .cssload-heartR, .cssload-square {
+    background: #ff0000;
+    position: absolute;
+}
+
+.cssload-heartL, .cssload-heartR {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.cssload-heartL { top: 0; left: 0; }
+.cssload-heartR { top: 0; right: 0; }
+.cssload-square {
+    width: 50px;
+    height: 50px;
+    top: 25px;
+    left: 25px;
+    transform: rotate(-45deg);
+}
+
+@keyframes cssload-heart {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(360deg) scale(0.8); }
+    100% { transform: rotate(720deg) scale(1); }
 }

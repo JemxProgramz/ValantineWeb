@@ -1,82 +1,132 @@
-let highestZ = 1;
+const questionContainer = document.querySelector(".question-container");
+const resultContainer = document.querySelector(".result-container");
+const gifResult = document.querySelector(".gif-result");
+const heartLoader = document.querySelector(".cssload-main");
+const yesBtn = document.querySelector(".js-yes-btn");
+const noBtn = document.querySelector(".js-no-btn");
 
-class Paper {
-  holdingPaper = false;
-  mouseTouchX = 0;
-  mouseTouchY = 0;
-  mouseX = 0;
-  mouseY = 0;
-  prevMouseX = 0;
-  prevMouseY = 0;
-  velX = 0;
-  velY = 0;
-  rotation = Math.random() * 30 - 15;
-  currentPaperX = 0;
-  currentPaperY = 0;
-  rotating = false;
+/**
+ * 1. DYNAMIC BACKGROUND & PETALS
+ */
+document.body.style.transition = "background 2s ease";
 
-  init(paper) {
-    document.addEventListener('mousemove', (e) => {
-      if(!this.rotating) {
-        this.mouseX = e.clientX;
-        this.mouseY = e.clientY;
-        
-        this.velX = this.mouseX - this.prevMouseX;
-        this.velY = this.mouseY - this.prevMouseY;
-      }
-        
-      const dirX = e.clientX - this.mouseTouchX;
-      const dirY = e.clientY - this.mouseTouchY;
-      const dirLength = Math.sqrt(dirX*dirX+dirY*dirY);
-      const dirNormalizedX = dirX / dirLength;
-      const dirNormalizedY = dirY / dirLength;
-
-      const angle = Math.atan2(dirNormalizedY, dirNormalizedX);
-      let degrees = 180 * angle / Math.PI;
-      degrees = (360 + Math.round(degrees)) % 360;
-      if(this.rotating) {
-        this.rotation = degrees;
-      }
-
-      if(this.holdingPaper) {
-        if(!this.rotating) {
-          this.currentPaperX += this.velX;
-          this.currentPaperY += this.velY;
-        }
-        this.prevMouseX = this.mouseX;
-        this.prevMouseY = this.mouseY;
-
-        paper.style.transform = `translateX(${this.currentPaperX}px) translateY(${this.currentPaperY}px) rotateZ(${this.rotation}deg)`;
-      }
-    })
-
-    paper.addEventListener('mousedown', (e) => {
-      if(this.holdingPaper) return; 
-      this.holdingPaper = true;
-      
-      paper.style.zIndex = highestZ;
-      highestZ += 1;
-      
-      if(e.button === 0) {
-        this.mouseTouchX = this.mouseX;
-        this.mouseTouchY = this.mouseY;
-        this.prevMouseX = this.mouseX;
-        this.prevMouseY = this.mouseY;
-      }
-      if(e.button === 2) {
-        this.rotating = true;
-      }
-    });
-    window.addEventListener('mouseup', () => {
-      this.holdingPaper = false;
-      this.rotating = false;
-    });
-  }
+function createPetal() {
+    const petal = document.createElement("div");
+    petal.classList.add("petal");
+    
+    const size = Math.random() * 15 + 10 + "px";
+    petal.style.width = size;
+    petal.style.height = size;
+    petal.style.left = Math.random() * 100 + "vw";
+    petal.style.animationDuration = Math.random() * 3 + 2 + "s";
+    petal.style.filter = `hue-rotate(${Math.random() * 20}deg)`; 
+    
+    document.body.appendChild(petal);
+    setTimeout(() => petal.remove(), 5000);
 }
 
-const papers = Array.from(document.querySelectorAll('.paper'));
+setInterval(createPetal, 300);
 
-papers.forEach(paper => {
-  const p = new Paper();
-  p.init(paper);
+/**
+ * 2. MOUSE SPARKLE EFFECT
+ */
+document.addEventListener("mousemove", (e) => {
+    const sparkle = document.createElement("span");
+    sparkle.innerHTML = "🌸"; 
+    sparkle.style.position = "fixed";
+    sparkle.style.left = e.clientX + "px";
+    sparkle.style.top = e.clientY + "px";
+    sparkle.style.fontSize = "10px";
+    sparkle.style.pointerEvents = "none";
+    sparkle.style.zIndex = "999";
+    sparkle.style.opacity = "1";
+    sparkle.style.transition = "all 0.8s ease";
+    
+    document.body.appendChild(sparkle);
+    
+    setTimeout(() => {
+        sparkle.style.transform = `translateY(${(Math.random() - 0.5) * 50}px) scale(0)`;
+        sparkle.style.opacity = "0";
+    }, 50);
+
+    setTimeout(() => sparkle.remove(), 800);
+});
+
+/**
+ * 3. "NO" BUTTON RUNAWAY LOGIC + CHANGING MESSAGES
+ */
+const messages = [
+    "No? 🥺",
+    "Are you sure?",
+    "Think again! 🌸",
+    "Oh nooo!",
+    "Why you try no? 😭",
+    "PLeaseeee",
+    "Don't do this to me...",
+    "You're misclicking, right?",
+    "Give it a chance! ❤️",
+    "Click Yes instead! ✨"
+];
+
+let messageIndex = 0;
+
+noBtn.addEventListener("mouseover", () => {
+    const maxX = window.innerWidth - noBtn.offsetWidth;
+    const maxY = window.innerHeight - noBtn.offsetHeight;
+
+    const newX = Math.random() * maxX;
+    const newY = Math.random() * maxY;
+    const randomRotation = (Math.random() - 0.5) * 40; 
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = `${newX}px`;
+    noBtn.style.top = `${newY}px`;
+    noBtn.style.transform = `rotate(${randomRotation}deg)`;
+
+    // Update the message each time it's hovered
+    noBtn.innerText = messages[messageIndex];
+    messageIndex = (messageIndex + 1) % messages.length;
+});
+
+/**
+ * 4. "YES" BUTTON & CELEBRATION
+ */
+yesBtn.addEventListener("click", () => {
+    questionContainer.style.display = "none";
+    heartLoader.style.display = "block";
+
+    document.body.style.background = "radial-gradient(circle, #ffdee9 0%, #ff9a9e 100%)";
+
+    setTimeout(() => {
+        heartLoader.style.display = "none";
+        resultContainer.style.display = "block";
+        gifResult.play();
+        
+        for(let i = 0; i < 100; i++) {
+            setTimeout(() => {
+                const heart = document.createElement("div");
+                heart.innerHTML = "❤️";
+                heart.style.position = "fixed";
+                heart.style.left = "50vw";
+                heart.style.top = "50vh";
+                heart.style.fontSize = Math.random() * 30 + 10 + "px";
+                heart.style.transition = "all 2s ease-out";
+                heart.style.zIndex = "1000";
+                
+                document.body.appendChild(heart);
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 400 + 100;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+
+                setTimeout(() => {
+                    heart.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random() * 360}deg)`;
+                    heart.style.opacity = "0";
+                }, 10);
+                
+                setTimeout(() => heart.remove(), 2000);
+            }, i * 15);
+        }
+    }, 3000);
 });
